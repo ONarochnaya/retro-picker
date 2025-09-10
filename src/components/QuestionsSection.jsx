@@ -36,12 +36,12 @@ export function QuestionsSection({
                 </div>
 
                 {!isLast ? (
-                    <button className="btn" onClick={nextStep} disabled={!canNext}>
+                    <button className="btn btn-outline-primary" onClick={nextStep} disabled={!canNext}>
                         Next {canNext ? "" : " (choose an option)"} →
                     </button>
                 ) : (
-                    <button className="btn" onClick={onSubmit} disabled={!allAnswered}>
-                        Get recommendation ({Object.values(answers).filter(Boolean).length}/{total})
+                    <button className="btn btn-outline-primary" onClick={onSubmit} disabled={!allAnswered}>
+                        Get recommendation
                     </button>
                 )}
             </div>
