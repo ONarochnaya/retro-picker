@@ -109,47 +109,46 @@ export default function App() {
                 <h1 className="h4 mb-1">Retro Format Picker</h1>
             </header>
 
-            <div className="row g-3">
-                {/* LEFT: questions (stepper) */}
-                <div className="col-lg-4">
-                    <QuestionsSection
-                        answers={answers}
-                        onChange={onChange}
-                        onSubmit={handleGetRecommendation}
-                        onReset={reset}
-                        step={step}
-                        nextStep={nextStep}
-                        prevStep={prevStep}
-                        total={total}
-                    />
-                </div>
+            {/* Вопросы */}
+            <div className="mb-3">
+                <QuestionsSection
+                    answers={answers}
+                    onChange={onChange}
+                    onSubmit={handleGetRecommendation}
+                    onReset={reset}
+                    step={step}
+                    nextStep={nextStep}
+                    prevStep={prevStep}
+                    total={total}
+                />
+            </div>
 
-                {/* MIDDLE: recommendations (carousel already handled inside the component) */}
-                <div className="col-lg-5">
-                    <RecommendationsSection
-                        show={show}
-                        top={top}
-                        requestedMinutes={answers.time}
-                        answers={answers}
-                        onCopy={handleCopy}
-                    />
-                </div>
+            {/* Топ-рекомендации */}
+            <div className="mb-3">
+                <RecommendationsSection
+                    show={show}
+                    top={top}
+                    requestedMinutes={answers.time}
+                    answers={answers}
+                    onCopy={handleCopy}
+                />
+            </div>
 
-                {/* RIGHT: icebreaker */}
-                <div className="col-lg-3">
-                    <IcebreakerCard
-                        loading={iceLoading}
-                        error={iceError}
-                        hasImages={iceUrls.length > 0}
-                        imageUrl={iceIdx !== null ? iceUrls[iceIdx] : null}
-                        onPick={handlePickIce}
-                        onCopyImage={handleCopyIceImage}
-                        onCopyUrl={handleCopyIceUrl}
-                        onDownload={handleDownloadIce}
-                        copiedMode={iceCopiedMode}
-                    />
-                </div>
+            {/* Айсбрейкер */}
+            <div>
+                <IcebreakerCard
+                    loading={iceLoading}
+                    error={iceError}
+                    hasImages={iceUrls.length > 0}
+                    imageUrl={iceIdx !== null ? iceUrls[iceIdx] : null}
+                    onPick={handlePickIce}
+                    onCopyImage={handleCopyIceImage}
+                    onCopyUrl={handleCopyIceUrl}
+                    onDownload={handleDownloadIce}
+                    copiedMode={iceCopiedMode}
+                />
             </div>
         </div>
     );
+
 }
