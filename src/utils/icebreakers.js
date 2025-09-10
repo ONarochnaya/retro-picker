@@ -1,4 +1,6 @@
-// Loads /public/icebreakers/images.json and returns absolute URLs.
+// src/utils/icebreakers.js
+
+// Load from /public/icebreakers/images.json (or CDN by changing base)
 export async function loadIcebreakerUrls(base = "/icebreakers") {
     const res = await fetch(`${base}/images.json`);
     if (!res.ok) throw new Error("images.json not found in /public/icebreakers/");
@@ -6,7 +8,7 @@ export async function loadIcebreakerUrls(base = "/icebreakers") {
     return files.map((f) => `${base}/${f}`);
 }
 
-// Helper: pick a random index (avoid repeating current if provided)
+// Pick random index, avoiding the current one if provided
 export function randomIndex(len, exclude = null) {
     if (len <= 1) return 0;
     let idx = Math.floor(Math.random() * len);
@@ -14,23 +16,39 @@ export function randomIndex(len, exclude = null) {
     return idx;
 }
 
-// Copy bitmap if supported, else copy URL string
+// Copy bitmap if supported; otherwise copy URL text
 export async function copyImageSmart(url) {
     try {
-        const resp = await fetch(url, { mode: "cors" });
+        const resp = await fetch(url, { mode: "cors", credentials: "omit", cache: "no-cache" });
+        if (!resp.ok) throw new Error(`Failed to fetch image: ${resp.status}`);
         const blob = await resp.blob();
-        if (window.ClipboardItem && navigator.clipboard?.write) {
-            await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+
+        const canWriteImage =
+            typeof window !== "undefined" &&
+            "ClipboardItem" in window &&
+            navigator.clipboard &&
+            typeof navigator.clipboard.write === "function";
+
+        if (canWriteImage) {
+            const item = new ClipboardItem({ [blob.type]: blob });
+            await navigator.clipboard.write([item]); // HTTPS/localhost + user gesture
             return "image";
         }
-        throw new Error("Bitmap clipboard not supported");
-    } catch {
+
         await navigator.clipboard.writeText(url);
         return "url";
+    } catch {
+        try {
+            await navigator.clipboard.writeText(url);
+            return "url";
+        } catch {
+            window.prompt("Copy image URL:", url);
+            return "url";
+        }
     }
 }
 
-// Simple download helper
+// Trigger a download
 export function downloadUrl(url, filename = "") {
     const a = document.createElement("a");
     a.href = url;

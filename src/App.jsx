@@ -6,6 +6,7 @@ import { RecommendationsSection } from './components/RecommendationsSection.jsx'
 import { useEffect } from "react";
 import IcebreakerCard from "./components/IcebreakerCard.jsx";
 import { loadIcebreakerUrls, randomIndex, copyImageSmart, downloadUrl } from "./utils/icebreakers.js";
+// App.jsx
 
 
 export default function App() {
@@ -39,6 +40,13 @@ export default function App() {
     function handleCopy(message) {
         setCopied(message);
         setTimeout(() => setCopied(""), 2000);
+    }
+
+    async function handleCopyIceImage() {
+        if (iceIdx === null) return;
+        const mode = await copyImageSmart(iceUrls[iceIdx]); // "image" or "url"
+        setIceCopiedMode(mode);            // use this to tint the button & text
+        setTimeout(() => setIceCopiedMode(""), 1500);
     }
 
     useEffect(() => {
