@@ -82,28 +82,15 @@ export default function App() {
         downloadUrl(iceUrls[iceIdx]);
     }
 
-
     return (
         <div className="container py-4">
             <header className="mb-3">
                 <h1 className="h4 mb-1">Retro Format Picker</h1>
             </header>
 
-            <IcebreakerCard
-                loading={iceLoading}
-                error={iceError}
-                hasImages={iceUrls.length > 0}
-                imageUrl={iceIdx !== null ? iceUrls[iceIdx] : null}
-                onPick={handlePickIce}
-                onCopyImage={handleCopyIceImage}
-                onCopyUrl={handleCopyIceUrl}
-                onDownload={handleDownloadIce}
-                copiedMode={iceCopiedMode}
-            />
-
-
             <div className="row g-3">
-                <div className="col-lg-5">
+                {/* LEFT: questions */}
+                <div className="col-lg-4">
                     <QuestionsSection
                         answers={answers}
                         onChange={onChange}
@@ -111,10 +98,10 @@ export default function App() {
                         onGetRecommendation={handleGetRecommendation}
                         onReset={reset}
                     />
-
                 </div>
 
-                <div className="col-lg-7">
+                {/* MIDDLE: recommendations */}
+                <div className="col-lg-5">
                     <RecommendationsSection
                         show={show}
                         top={top}
@@ -123,7 +110,24 @@ export default function App() {
                         onCopy={handleCopy}
                     />
                 </div>
+
+                {/* RIGHT: icebreaker */}
+                <div className="col-lg-3">
+                    <IcebreakerCard
+                        loading={iceLoading}
+                        error={iceError}
+                        hasImages={iceUrls.length > 0}
+                        imageUrl={iceIdx !== null ? iceUrls[iceIdx] : null}
+                        onPick={handlePickIce}
+                        onCopyImage={handleCopyIceImage}
+                        onCopyUrl={handleCopyIceUrl}
+                        onDownload={handleDownloadIce}
+                        copiedMode={iceCopiedMode}
+                    />
+                </div>
             </div>
         </div>
     );
+
+
 }
