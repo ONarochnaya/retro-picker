@@ -44,3 +44,24 @@ export function buildExportMarkdown(answers, top) {
     ];
     return lines.join("\n");
 }
+
+export function buildSingleFormatMarkdown(answers, format) {
+    const total = answers.time ? Number(answers.time) : Math.min(Math.max(format.time.min, 45), format.time.max);
+    const agenda = minutesToPlan(total, format.structure);
+
+    const lines = [
+        `# Retro: ${format.name} (${total} min)`,
+        ``,
+        `**Goal:** ${answers.goal ?? "—"}    `,
+        `**Team mood:** ${answers.mood ?? "—"}    `,
+        `**Sprint outcome:** ${answers.outcome ?? "—"}    `,
+        `**Mode:** ${answers.mode ?? "—"}    `,
+        ``,
+        `## Agenda`,
+        ...agenda.map((b) => `- ${b.label} — ${b.minutes}m`),
+        ``,
+        `## Tips`,
+        ...format.tips.map((t) => `- ${t}`),
+    ];
+    return lines.join("\n");
+}

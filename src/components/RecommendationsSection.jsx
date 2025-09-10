@@ -1,7 +1,7 @@
 import { Card } from './UIComponents.jsx';
 import { Recommendation } from './Recommendation.jsx';
 
-export function RecommendationsSection({ show, top, requestedMinutes }) {
+export function RecommendationsSection({ show, top, requestedMinutes, answers, onCopy }) {
     return (
         <Card
             title="Top picks"
@@ -15,7 +15,13 @@ export function RecommendationsSection({ show, top, requestedMinutes }) {
             {show && (
                 <>
                     {top.map((f) => (
-                        <Recommendation key={f.id} format={f} requestedMinutes={requestedMinutes} />
+                        <Recommendation
+                            key={f.id}
+                            format={f}
+                            requestedMinutes={requestedMinutes}
+                            answers={answers}
+                            onCopy={onCopy}
+                        />
                     ))}
                 </>
             )}

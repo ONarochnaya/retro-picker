@@ -63,6 +63,8 @@ export default function App() {
                         show={show}
                         top={top}
                         requestedMinutes={answers.time}
+                        answers={answers}
+                        onCopy={handleCopy}
                     />
                 </div>
             </div>
