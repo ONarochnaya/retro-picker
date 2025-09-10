@@ -1,13 +1,15 @@
 export const QUESTIONS = [
     {
         key: "mood",
-        label: "What's the overall team mood?",
+        label: "What’s the overall team mood?",
+        type: "emoji",
         options: [
-            { value: "stressed", label: "Stressed / fatigued" },
-            { value: "neutral", label: "Neutral / okay" },
-            { value: "excited", label: "Upbeat / energized" },
-            { value: "tense", label: "Tense / conflict present" },
+            { value: "happy", label: "Happy", icon: "😊" },
+            { value: "ok",    label: "Okay",  icon: "🙂" },
+            { value: "sad",   label: "Sad",   icon: "🙁" },
+            { value: "meh",   label: "Meh",   icon: "😕" },
         ],
+        hint: "Pick what matches the iteration best.",
     },
     {
         key: "outcome",

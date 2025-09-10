@@ -23,6 +23,7 @@ export default function App() {
     const top = useMemo(() => suggestFormats(answers), [answers]);
     const allAnswered = QUESTIONS.every((q) => answers[q.key]);
 
+
     function onChange(key, val) {
         setAnswers((prev) => ({ ...prev, [key]: val }));
     }
@@ -102,10 +103,10 @@ export default function App() {
                     <QuestionsSection
                         answers={answers}
                         onChange={onChange}
-                        allAnswered={allAnswered}
-                        onGetRecommendation={handleGetRecommendation}
+                        onSubmit={handleGetRecommendation}
                         onReset={reset}
                     />
+
                 </div>
 
                 {/* MIDDLE: recommendations */}

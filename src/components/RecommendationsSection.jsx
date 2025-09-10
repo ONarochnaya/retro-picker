@@ -1,48 +1,48 @@
-import useEmblaCarousel from "embla-carousel-react";
-import { useCallback } from "react";
 import { Card } from "./UIComponents.jsx";
 import { Recommendation } from "./Recommendation.jsx";
+import { useState, useMemo } from "react";
 
 export function RecommendationsSection({ show, top, requestedMinutes, answers, onCopy }) {
-    const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
+    const [index, setIndex] = useState(0);
+    const clamped = useMemo(() => Math.max(0, Math.min(index, Math.max(top.length - 1, 0))), [index, top.length]);
 
-    const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
-    const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+    function prev() { setIndex(i => (i > 0 ? i - 1 : top.length - 1)); }
+    function next() { setIndex(i => (i < top.length - 1 ? i + 1 : 0)); }
+
+    if (!show) {
+        return (
+            <Card title="Top picks" footer={<small className="help">Answer the questions to see suggestions.</small>}>
+                <div className="help">Fill in the questions and click <b>Get recommendation</b>.</div>
+            </Card>
+        );
+    }
 
     return (
         <Card
             title="Top picks"
-            footer={<small className="small-muted">Use arrows to browse recommended formats.</small>}
+            footer={<small className="help">{clamped + 1} / {top.length}</small>}
         >
-            {!show && (
-                <div className="small-muted">
-                    Fill the questions and click <span className="fw-semibold">Get recommendation</span>.
-                </div>
-            )}
-
-            {show && (
-                <div className="relative">
-                    {/* Arrows */}
-                    <button className="carousel-btn left" onClick={scrollPrev}>‹</button>
-                    <button className="carousel-btn right" onClick={scrollNext}>›</button>
-
-                    {/* Carousel */}
-                    <div className="embla" ref={emblaRef}>
-                        <div className="embla__container">
-                            {top.map((f) => (
-                                <div className="embla__slide" key={f.id}>
-                                    <Recommendation
-                                        format={f}
-                                        requestedMinutes={requestedMinutes}
-                                        answers={answers}
-                                        onCopy={onCopy}
-                                    />
-                                </div>
-                            ))}
-                        </div>
+            <div className="carousel">
+                <button className="carousel-arrow left" onClick={prev} aria-label="Previous">‹</button>
+                <div className="carousel-viewport" style={{ overflow: "hidden" }}>
+                    <div
+                        className="carousel-track"
+                        style={{ transform: `translateX(-${clamped * 100}%)` }}
+                    >
+                        {top.map((f) => (
+                            <div className="carousel-slide" key={f.id}>
+                                <Recommendation
+                                    format={f}
+                                    requestedMinutes={requestedMinutes}
+                                    answers={answers}
+                                    onCopy={onCopy}
+                                />
+                            </div>
+                        ))}
                     </div>
                 </div>
-            )}
+                <button className="carousel-arrow right" onClick={next} aria-label="Next">›</button>
+            </div>
         </Card>
     );
 }
