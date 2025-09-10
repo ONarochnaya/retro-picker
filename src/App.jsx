@@ -1,40 +1,55 @@
-import { useMemo, useState } from "react";
-import { QUESTIONS } from './data/questions.js';
-import { suggestFormats } from './utils/scoring.js';
-import { QuestionsSection } from './components/QuestionsSection.jsx';
-import { RecommendationsSection } from './components/RecommendationsSection.jsx';
-import { useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { QUESTIONS } from "./data/questions.js";
+import { suggestFormats } from "./utils/scoring.js";
+import { QuestionsSection } from "./components/QuestionsSection.jsx";
+import { RecommendationsSection } from "./components/RecommendationsSection.jsx";
 import IcebreakerCard from "./components/IcebreakerCard.jsx";
 import { loadIcebreakerUrls, randomIndex, copyImageSmart, downloadUrl } from "./utils/icebreakers.js";
+
 // App.jsx
-
-
 export default function App() {
+    // Icebreaker state
     const [iceUrls, setIceUrls] = useState([]);
     const [iceIdx, setIceIdx] = useState(null);
     const [iceLoading, setIceLoading] = useState(false);
     const [iceError, setIceError] = useState("");
     const [iceCopiedMode, setIceCopiedMode] = useState(""); // "image" | "url" | ""
 
+    // Questionnaire state
     const [answers, setAnswers] = useState({});
     const [show, setShow] = useState(false);
     const [, setCopied] = useState("");
 
+    // Stepper state (one question at a time)
+    const [step, setStep] = useState(0);
+    const total = QUESTIONS.length;
+
+    // Derived
     const top = useMemo(() => suggestFormats(answers), [answers]);
     const allAnswered = QUESTIONS.every((q) => answers[q.key]);
 
-
+    // Handlers: questionnaire
     function onChange(key, val) {
         setAnswers((prev) => ({ ...prev, [key]: val }));
+    }
+
+    function nextStep() {
+        setStep((s) => Math.min(s + 1, total - 1));
+    }
+
+    function prevStep() {
+        setStep((s) => Math.max(s - 1, 0));
     }
 
     function reset() {
         setAnswers({});
         setShow(false);
         setCopied("");
+        setStep(0);
     }
 
     function handleGetRecommendation() {
+        if (!allAnswered) return; // keep disabled/gated from UI, but also guard here
         setShow(true);
     }
 
@@ -43,30 +58,7 @@ export default function App() {
         setTimeout(() => setCopied(""), 2000);
     }
 
-    async function handleCopyIceImage() {
-        if (iceIdx === null) return;
-        const mode = await copyImageSmart(iceUrls[iceIdx]); // "image" or "url"
-        setIceCopiedMode(mode);            // use this to tint the button & text
-        setTimeout(() => setIceCopiedMode(""), 1500);
-    }
-
-    useEffect(() => {
-        let cancelled = false;
-        (async () => {
-            try {
-                setIceLoading(true);
-                setIceError("");
-                const urls = await loadIcebreakerUrls("/icebreakers");
-                if (!cancelled) setIceUrls(urls);
-            } catch (e) {
-                if (!cancelled) setIceError(e.message || "Failed to load images");
-            } finally {
-                if (!cancelled) setIceLoading(false);
-            }
-        })();
-        return () => { cancelled = true; };
-    }, []);
-
+    // Handlers: icebreaker
     function handlePickIce() {
         setIceIdx((cur) => randomIndex(iceUrls.length, cur));
         setIceCopiedMode("");
@@ -91,6 +83,26 @@ export default function App() {
         downloadUrl(iceUrls[iceIdx]);
     }
 
+    // Load icebreaker images
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                setIceLoading(true);
+                setIceError("");
+                const urls = await loadIcebreakerUrls("/icebreakers");
+                if (!cancelled) setIceUrls(urls);
+            } catch (e) {
+                if (!cancelled) setIceError(e.message || "Failed to load images");
+            } finally {
+                if (!cancelled) setIceLoading(false);
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
     return (
         <div className="container py-4">
             <header className="mb-3">
@@ -98,18 +110,21 @@ export default function App() {
             </header>
 
             <div className="row g-3">
-                {/* LEFT: questions */}
+                {/* LEFT: questions (stepper) */}
                 <div className="col-lg-4">
                     <QuestionsSection
                         answers={answers}
                         onChange={onChange}
                         onSubmit={handleGetRecommendation}
                         onReset={reset}
+                        step={step}
+                        nextStep={nextStep}
+                        prevStep={prevStep}
+                        total={total}
                     />
-
                 </div>
 
-                {/* MIDDLE: recommendations */}
+                {/* MIDDLE: recommendations (carousel already handled inside the component) */}
                 <div className="col-lg-5">
                     <RecommendationsSection
                         show={show}
@@ -137,6 +152,4 @@ export default function App() {
             </div>
         </div>
     );
-
-
 }
