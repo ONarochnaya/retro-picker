@@ -34,7 +34,7 @@ const QUESTIONS = [
     },
 ];
 
-/** ---------- Formats (now with structure + tips) ---------- */
+/** ---------- Formats (with structure + tips) ---------- */
 const FORMATS = [
     {
         id: "start-stop-continue",
@@ -155,16 +155,59 @@ function suggestFormats(answers) {
 
 /** ---------- Helpers ---------- */
 function minutesToPlan(total, blocks) {
-    // scale structure proportionally to total minutes
     const sum = blocks.reduce((acc, b) => acc + b.minutes, 0) || 1;
     const scaled = blocks.map((b) => ({
         ...b,
         minutes: Math.max(2, Math.round((b.minutes / sum) * total)),
     }));
-    // fix rounding drift
     const drift = total - scaled.reduce((acc, b) => acc + b.minutes, 0);
     if (drift !== 0 && scaled.length) scaled[0].minutes += drift;
     return scaled;
+}
+
+/** ---------- Export builders ---------- */
+function buildExportJson(answers, top) {
+    return JSON.stringify(
+        {
+            answers,
+            recommendations: top.map((f) => {
+                const total = answers.time ? Number(answers.time) : Math.min(Math.max(f.time.min, 45), f.time.max);
+                return {
+                    id: f.id,
+                    name: f.name,
+                    time: f.time,
+                    tags: f.tags,
+                    planMinutes: total,
+                    agenda: minutesToPlan(total, f.structure),
+                    tips: f.tips,
+                };
+            }),
+        },
+        null,
+        2
+    );
+}
+
+function buildExportMarkdown(answers, top) {
+    if (!top.length) return "";
+    const f = top[0];
+    const total = answers.time ? Number(answers.time) : Math.min(Math.max(f.time.min, 45), f.time.max);
+    const agenda = minutesToPlan(total, f.structure);
+
+    const lines = [
+        `# Retro: ${f.name} (${total} min)`,
+        ``,
+        `**Goal:** ${answers.goal ?? "—"}    `,
+        `**Team mood:** ${answers.mood ?? "—"}    `,
+        `**Mode:** —    `,
+        ``,
+        `## Agenda`,
+        ...agenda.map((b) => `- ${b.label} — ${b.minutes}m`),
+        ``,
+        `## Tips`,
+        ...f.tips.map((t) => `- ${t}`),
+    ];
+    return lines.join("\n");
 }
 
 /** ---------- UI Bits ---------- */
@@ -237,6 +280,7 @@ function Recommendation({ format, requestedMinutes }) {
 export default function App() {
     const [answers, setAnswers] = useState({});
     const [show, setShow] = useState(false);
+    const [copied, setCopied] = useState("");
 
     const top = useMemo(() => suggestFormats(answers), [answers]);
     const allAnswered = QUESTIONS.every((q) => answers[q.key]);
@@ -248,13 +292,24 @@ export default function App() {
     function reset() {
         setAnswers({});
         setShow(false);
+        setCopied("");
+    }
+
+    async function copyToClipboard(text, label) {
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopied(label);
+            setTimeout(() => setCopied(""), 2000);
+        } catch (e) {
+            alert("Copy failed. You can manually select and copy.");
+        }
     }
 
     return (
         <div className="container py-4">
             <header className="mb-3">
                 <h1 className="h4 mb-1">Retro Format Picker</h1>
-                <p className="text-muted mb-0">Step 4: recommendations as cards with auto-scaled agenda</p>
+                <p className="text-muted mb-0">Step 5: export (JSON + Markdown)</p>
             </header>
 
             <div className="row g-3">
@@ -269,6 +324,27 @@ export default function App() {
                             </button>
                             <button className="btn btn-outline-secondary" onClick={reset}>Reset</button>
                         </div>
+                    </Card>
+
+                    <Card title="Export">
+                        <p className="mb-2">Copy the plan to share in your retro invite.</p>
+                        <div className="d-flex flex-wrap gap-2">
+                            <button
+                                className="btn btn-outline-primary"
+                                disabled={!show || !top.length}
+                                onClick={() => copyToClipboard(buildExportJson(answers, top), "JSON copied")}
+                            >
+                                Copy JSON
+                            </button>
+                            <button
+                                className="btn btn-outline-dark"
+                                disabled={!show || !top.length}
+                                onClick={() => copyToClipboard(buildExportMarkdown(answers, top), "Markdown copied")}
+                            >
+                                Copy Markdown
+                            </button>
+                        </div>
+                        {copied && <div className="text-success mt-2 small">{copied}</div>}
                     </Card>
                 </div>
 
