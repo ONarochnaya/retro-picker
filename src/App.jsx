@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { QUESTIONS } from './data/questions.js';
 import { suggestFormats } from './utils/scoring.js';
 import { QuestionsSection } from './components/QuestionsSection.jsx';
-import { ExportSection } from './components/ExportSection.jsx';
 import { RecommendationsSection } from './components/RecommendationsSection.jsx';
 
 export default function App() {
@@ -49,13 +48,6 @@ export default function App() {
                         onReset={reset}
                     />
 
-                    <ExportSection
-                        show={show}
-                        answers={answers}
-                        top={top}
-                        copied={copied}
-                        onCopy={handleCopy}
-                    />
                 </div>
 
                 <div className="col-lg-7">
