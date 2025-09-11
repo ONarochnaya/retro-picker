@@ -1,4 +1,4 @@
-import { FORMATS } from '../data/formats.js';
+import {FORMATS} from '../data/formats.js';
 
 function includes(format, tagList) {
     return tagList.some((t) => format.tags.includes(t));
@@ -47,7 +47,7 @@ function scoreFormat(answers, format) {
 
 export function suggestFormats(answers) {
     return FORMATS
-        .map((f) => ({ ...f, score: scoreFormat(answers, f) }))
+        .map((f) => ({...f, score: scoreFormat(answers, f)}))
         .sort((a, b) => b.score - a.score)
         .slice(0, 3);
 }

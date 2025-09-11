@@ -1,4 +1,4 @@
-import { minutesToPlan } from './timeUtils.js';
+import {minutesToPlan} from './timeUtils.js';
 
 export function buildExportJson(answers, top) {
     return JSON.stringify(

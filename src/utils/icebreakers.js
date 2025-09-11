@@ -19,7 +19,7 @@ export function randomIndex(len, exclude = null) {
 // Copy bitmap if supported; otherwise copy URL text
 export async function copyImageSmart(url) {
     try {
-        const resp = await fetch(url, { mode: "cors", credentials: "omit", cache: "no-cache" });
+        const resp = await fetch(url, {mode: "cors", credentials: "omit", cache: "no-cache"});
         if (!resp.ok) throw new Error(`Failed to fetch image: ${resp.status}`);
         const blob = await resp.blob();
 
@@ -30,7 +30,7 @@ export async function copyImageSmart(url) {
             typeof navigator.clipboard.write === "function";
 
         if (canWriteImage) {
-            const item = new ClipboardItem({ [blob.type]: blob });
+            const item = new ClipboardItem({[blob.type]: blob});
             await navigator.clipboard.write([item]); // HTTPS/localhost + user gesture
             return "image";
         }

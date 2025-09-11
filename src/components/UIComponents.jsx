@@ -1,4 +1,4 @@
-export function Selector({ q, value, onChange }) {
+export function Selector({q, value, onChange}) {
     return (
         <div className="mb-3">
             <label className="form-label">{q.label}</label>
@@ -16,7 +16,7 @@ export function Selector({ q, value, onChange }) {
     );
 }
 
-export function Card({ title, children, footer }) {
+export function Card({title, children, footer}) {
     return (
         <div className="card shadow-sm mb-3">
             <div className="card-header fw-semibold">{title}</div>
@@ -26,6 +26,6 @@ export function Card({ title, children, footer }) {
     );
 }
 
-export function Pill({ children }) {
+export function Pill({children}) {
     return <span className="badge bg-secondary me-2">{children}</span>;
 }

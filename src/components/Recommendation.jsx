@@ -1,7 +1,7 @@
-import { useState, useMemo } from 'react';
-import { minutesToPlan } from '../utils/timeUtils.js';
-import { buildSingleFormatMarkdown } from '../utils/exportUtils.js';
-import { Card, Pill } from './UIComponents.jsx';
+import {useState, useMemo} from 'react';
+import {minutesToPlan} from '../utils/timeUtils.js';
+import {buildSingleFormatMarkdown} from '../utils/exportUtils.js';
+import {Card, Pill} from './UIComponents.jsx';
 
 export function Recommendation({
                                    format,
@@ -52,7 +52,7 @@ export function Recommendation({
                 <div className="d-flex gap-2">
                     <button
                         className={`btn btn-sm ${copied ? 'btn-success' : 'btn-outline-dark'}`}
-                        style={copied ? { backgroundColor: '#d4edda', color: '#155724' } : {}}
+                        style={copied ? {backgroundColor: '#d4edda', color: '#155724'} : {}}
                         onClick={handleCopy}
                         title="Copy this format as Markdown"
                     >
